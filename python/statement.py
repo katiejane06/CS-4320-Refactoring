@@ -53,7 +53,10 @@ def render_plain_text(data, plays):
     return result
 
 def statement(invoice, plays):
+    def enrich_performance(performance):
+        return performance.copy()
     statement_data = {}
     statement_data['customer'] = invoice['customer']
-    statement_data['performances'] = invoice['performances']
+    statement_data["performances"] = [enrich_performance(performance)for performance in invoice["performances"]]
+
     return render_plain_text(statement_data, plays)
