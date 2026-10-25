@@ -42,11 +42,17 @@ def statement(invoice, plays):
         for perf in invoice['performances']:
             volume_credits += calculate_volume_credits(perf)
         return volume_credits
+    def calculate_total_amount(invoice):
+        total_amount = 0
+        for perf in invoice['performances']:
+            total_amount += calculate_amount(perf)
+        return total_amount
 
     for perf in invoice['performances']:
         # print line for this order
         result += f' {get_play(perf)["name"]}: {format_as_usd(calculate_amount(perf))} ({perf["audience"]} seats)\n'
         total_amount += calculate_amount(perf)
+    total_amount = calculate_total_amount(invoice)
     volume_credits = calculate_total_volume_credits(invoice)
 
     result += f'Amount owed is {format_as_usd(total_amount)}\n'
