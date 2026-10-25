@@ -30,13 +30,15 @@ def statement(invoice, plays):
     def get_play(performance):
         return plays[performance['playID']]
 
-    for perf in invoice['performances']:
+    def calculate_volume_credits(performance):
+        volume_credits = 0
+        volume_credits += max(performance['audience'] - 30, 0)
+        if "comedy" == get_play(performance)["type"]:
+            volume_credits += math.floor(performance['audience'] / 5)
+        return volume_credits
 
-        # add volume credits
-        volume_credits += max(perf['audience'] - 30, 0)
-        # add extra credit for every ten comedy attendees
-        if "comedy" == get_play(perf)["type"]:
-            volume_credits += math.floor(perf['audience'] / 5)
+    for perf in invoice['performances']:
+        volume_credits += calculate_volume_credits(perf)
         # print line for this order
         result += f' {get_play(perf)["name"]}: {format_as_dollars(calculate_amount(perf)/100)} ({perf["audience"]} seats)\n'
         total_amount += calculate_amount(perf)
