@@ -6,7 +6,7 @@ def statement(invoice, plays):
     volume_credits = 0
     result = f'Statement for {invoice["customer"]}\n'
 
-    def format_as_dollars(amount):
+    def format_as_usd(amount):
         return f"${amount:0,.2f}"
 
     def calculate_amount(performance):
@@ -40,9 +40,9 @@ def statement(invoice, plays):
     for perf in invoice['performances']:
         volume_credits += calculate_volume_credits(perf)
         # print line for this order
-        result += f' {get_play(perf)["name"]}: {format_as_dollars(calculate_amount(perf)/100)} ({perf["audience"]} seats)\n'
+        result += f' {get_play(perf)["name"]}: {format_as_usd(calculate_amount(perf)/100)} ({perf["audience"]} seats)\n'
         total_amount += calculate_amount(perf)
 
-    result += f'Amount owed is {format_as_dollars(total_amount/100)}\n'
+    result += f'Amount owed is {format_as_usd(total_amount/100)}\n'
     result += f'You earned {volume_credits} credits\n'
     return result
