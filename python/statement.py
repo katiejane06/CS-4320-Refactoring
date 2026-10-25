@@ -1,22 +1,5 @@
 import math
 
-def calculate_amount(play, performance):
-    result = 0
-    if play['type'] == "tragedy":
-        result = 40000
-        if performance['audience'] > 30:
-            result += 1000 * (performance['audience'] - 30)
-    elif play['type'] == "comedy":
-        result = 30000
-        if performance['audience'] > 20:
-            result += 10000 + 500 * (performance['audience'] - 20)
-
-        result += 300 * performance['audience']
-
-    else:
-        raise ValueError(f'unknown type: {play["type"]}')
-
-    return result
 
 def statement(invoice, plays):
     total_amount = 0
@@ -25,6 +8,24 @@ def statement(invoice, plays):
 
     def format_as_dollars(amount):
         return f"${amount:0,.2f}"
+
+    def calculate_amount(play, performance):
+        result = 0
+        if play['type'] == "tragedy":
+            result = 40000
+            if performance['audience'] > 30:
+                result += 1000 * (performance['audience'] - 30)
+        elif play['type'] == "comedy":
+            result = 30000
+            if performance['audience'] > 20:
+                result += 10000 + 500 * (performance['audience'] - 20)
+
+            result += 300 * performance['audience']
+
+        else:
+            raise ValueError(f'unknown type: {play["type"]}')
+
+        return result
     
     def get_play(performance):
         return plays[performance['playID']]
