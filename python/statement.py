@@ -1,6 +1,6 @@
 import math
 
-def render_plain_text(invoice, plays):
+def render_plain_text(data, invoice, plays):
     def format_as_usd(amount):
         amount = amount/100
         return f"${amount:0,.2f}"
@@ -45,7 +45,7 @@ def render_plain_text(invoice, plays):
             result += calculate_amount(perf)
         return result
         
-    result = f'Statement for {invoice["customer"]}\n'
+    result = f'Statement for {data["customer"]}\n'
     for perf in invoice['performances']:
         result += f' {get_play(perf)["name"]}: {format_as_usd(calculate_amount(perf))} ({perf["audience"]} seats)\n'
     result += f'Amount owed is {format_as_usd(calculate_total_amount())}\n'
@@ -53,4 +53,6 @@ def render_plain_text(invoice, plays):
     return result
 
 def statement(invoice, plays):
-    return render_plain_text(invoice, plays)
+    statement_data = {}
+    statement_data['customer'] = invoice['customer']
+    return render_plain_text(statement_data, invoice, plays)
