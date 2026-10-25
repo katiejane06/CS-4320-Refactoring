@@ -1,22 +1,22 @@
 import math
 
 def calculate_amount(play, perf):
-    this_amount = 0
+    result = 0
     if play['type'] == "tragedy":
-        this_amount = 40000
+        result = 40000
         if perf['audience'] > 30:
-            this_amount += 1000 * (perf['audience'] - 30)
+            result += 1000 * (perf['audience'] - 30)
     elif play['type'] == "comedy":
-        this_amount = 30000
+        result = 30000
         if perf['audience'] > 20:
-            this_amount += 10000 + 500 * (perf['audience'] - 20)
+            result += 10000 + 500 * (perf['audience'] - 20)
 
-        this_amount += 300 * perf['audience']
+        result += 300 * perf['audience']
 
     else:
         raise ValueError(f'unknown type: {play["type"]}')
 
-    return this_amount
+    return result
 
 def statement(invoice, plays):
     total_amount = 0
