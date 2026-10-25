@@ -1,6 +1,6 @@
 import math
 
-def render_plain_text(data, invoice, plays):
+def render_plain_text(data, plays):
     def format_as_usd(amount):
         amount = amount/100
         return f"${amount:0,.2f}"
@@ -35,18 +35,18 @@ def render_plain_text(data, invoice, plays):
             
     def calculate_total_volume_credits():
         result = 0
-        for perf in invoice['performances']:
+        for perf in data['performances']:
             result += calculate_volume_credits(perf)
         return result
             
     def calculate_total_amount():
         result = 0
-        for perf in invoice['performances']:
+        for perf in data['performances']:
             result += calculate_amount(perf)
         return result
         
     result = f'Statement for {data["customer"]}\n'
-    for perf in invoice['performances']:
+    for perf in data['performances']:
         result += f' {get_play(perf)["name"]}: {format_as_usd(calculate_amount(perf))} ({perf["audience"]} seats)\n'
     result += f'Amount owed is {format_as_usd(calculate_total_amount())}\n'
     result += f'You earned {calculate_total_volume_credits()} credits\n'
@@ -55,4 +55,5 @@ def render_plain_text(data, invoice, plays):
 def statement(invoice, plays):
     statement_data = {}
     statement_data['customer'] = invoice['customer']
-    return render_plain_text(statement_data, invoice, plays)
+    statement_data['performances'] = invoice['performances']
+    return render_plain_text(statement_data, plays)
