@@ -11,11 +11,11 @@ def statement(invoice, plays):
 
     def calculate_amount(performance, play):
         result = 0
-        if play['type'] == "tragedy":
+        if get_play(performance)['type'] == "tragedy":
             result = 40000
             if performance['audience'] > 30:
                 result += 1000 * (performance['audience'] - 30)
-        elif play['type'] == "comedy":
+        elif get_play(performance)['type'] == "comedy":
             result = 30000
             if performance['audience'] > 20:
                 result += 10000 + 500 * (performance['audience'] - 20)
@@ -23,7 +23,7 @@ def statement(invoice, plays):
             result += 300 * performance['audience']
 
         else:
-            raise ValueError(f'unknown type: {play["type"]}')
+            raise ValueError(f'unknown type: {get_play(performance)["type"]}')
 
         return result
     
