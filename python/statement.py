@@ -25,9 +25,12 @@ def statement(invoice, plays):
 
     def format_as_dollars(amount):
         return f"${amount:0,.2f}"
+    
+    def get_play(performance):
+        return plays[performance['playID']]
 
     for perf in invoice['performances']:
-        play = plays[perf['playID']]
+        play = get_play(perf)
         this_amount = calculate_amount(play, perf)
 
         # add volume credits
