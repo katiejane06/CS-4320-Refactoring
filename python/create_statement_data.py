@@ -31,12 +31,27 @@ class ComedyCalculator(PerformanceCalculator):
     def volume_credits(self):
         return (super().volume_credits + self.performance["audience"] // 5)
 
+class HistoricalCalculator(PerformanceCalculator):
+    @property
+    def amount(self):
+        result = 50000
+        if self.performance['audience'] > 20:
+            result += 1500 * (self.performance['audience'] - 20)
+        return result
+    @property
+    def volume_credits(self):
+        return self.performance["audience"] // 5
+
+
 def create_performance_calculator(performance, play):
     if play["type"] == "tragedy":
         return TragedyCalculator(performance, play)
 
     if play["type"] == "comedy":
         return ComedyCalculator(performance, play)
+
+    if play["type"] == "historical":
+        return HistoricalCalculator(performance, play)
 
     raise ValueError(f'unknown type: {play["type"]}')
 
