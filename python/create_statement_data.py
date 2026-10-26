@@ -4,18 +4,13 @@ class PerformanceCalculator:
     def __init__(self, performance, play):
         self.performance = performance
         self.play = play
-
-def create_statement_data(invoice, plays):
-    def get_play(performance):
-        return plays[performance['playID']]
-
-    def calculate_amount(performance):
+    def calculate_amount(self, performance):
         result = 0
-        if performance["play"]["type"] == "tragedy":
+        if self.play["type"] == "tragedy":
             result = 40000
             if performance['audience'] > 30:
                 result += 1000 * (performance['audience'] - 30)
-        elif performance["play"]["type"] == "comedy":
+        elif self.play["type"] == "comedy":
             result = 30000
             if performance['audience'] > 20:
                 result += 10000 + 500 * (performance['audience'] - 20)
@@ -23,9 +18,17 @@ def create_statement_data(invoice, plays):
             result += 300 * performance['audience']
             
         else:
-            raise ValueError(f'unknown type: {performance["play"]["type"]}')
+            raise ValueError(f'unknown type: {self.play["type"]}')
             
         return result
+
+def create_statement_data(invoice, plays):
+    def get_play(performance):
+        return plays[performance['playID']]
+
+    def calculate_amount(performance):
+        calculator = PerformanceCalculator(performance, get_play(performance))
+        return calculator.calculate_amount(performance)
 
     def calculate_volume_credits(performance):
         result = 0
@@ -43,7 +46,7 @@ def create_statement_data(invoice, plays):
     def enrich_performance(performance):
         calculator = PerformanceCalculator(performance, get_play(performance))
         result = performance.copy()
-        result["play"] = get_play(result)
+        result["play"] = calculator.play
         result["amount"] = calculate_amount(result)
         result["volume_credits"] = calculate_volume_credits(result)
         return result
