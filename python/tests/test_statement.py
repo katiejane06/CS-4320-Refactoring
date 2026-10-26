@@ -44,3 +44,56 @@ def test_comedy_at_20_attendees():
     assert "As You Like It: $360.00 (20 seats)" in result
     assert "Amount owed is $360.00" in result
     assert "You earned 4 credits" in result
+
+def test_historical_at_20_attendees():
+    plays = {
+        "henry-v": {"name": "Henry V", "type": "historical"}
+    }
+    invoice = {
+        "customer": "Test Customer",
+        "performances": [
+            {"playID": "henry-v", "audience": 20}
+        ],
+    }
+
+    result = statement(invoice, plays)
+
+    assert "Henry V: $500.00 (20 seats)" in result
+    assert "Amount owed is $500.00" in result
+    assert "You earned 4 credits" in result
+
+
+def test_historical_at_21_attendees():
+    plays = {
+        "henry-v": {"name": "Henry V", "type": "historical"}
+    }
+    invoice = {
+        "customer": "Test Customer",
+        "performances": [
+            {"playID": "henry-v", "audience": 21}
+        ],
+    }
+
+    result = statement(invoice, plays)
+
+    assert "Henry V: $515.00 (21 seats)" in result
+    assert "Amount owed is $515.00" in result
+    assert "You earned 4 credits" in result
+
+
+def test_historical_at_35_attendees():
+    plays = {
+        "henry-v": {"name": "Henry V", "type": "historical"}
+    }
+    invoice = {
+        "customer": "Test Customer",
+        "performances": [
+            {"playID": "henry-v", "audience": 35}
+        ],
+    }
+
+    result = statement(invoice, plays)
+
+    assert "Henry V: $725.00 (35 seats)" in result
+    assert "Amount owed is $725.00" in result
+    assert "You earned 7 credits" in result
