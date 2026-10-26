@@ -5,24 +5,6 @@ def render_plain_text(data, plays):
         amount = amount/100
         return f"${amount:0,.2f}"
         
-    def calculate_amount(performance):
-        result = 0
-        if performance["play"]["type"] == "tragedy":
-            result = 40000
-            if performance['audience'] > 30:
-                result += 1000 * (performance['audience'] - 30)
-        elif performance["play"]["type"] == "comedy":
-            result = 30000
-            if performance['audience'] > 20:
-                result += 10000 + 500 * (performance['audience'] - 20)
-        
-            result += 300 * performance['audience']
-        
-        else:
-            raise ValueError(f'unknown type: {performance["play"]["type"]}')
-        
-        return result
-        
     def calculate_volume_credits(performance):
         result = 0
         result += max(performance['audience'] - 30, 0)
@@ -39,12 +21,12 @@ def render_plain_text(data, plays):
     def calculate_total_amount():
         result = 0
         for perf in data['performances']:
-            result += calculate_amount(perf)
+            result += perf["amount"]
         return result
         
     result = f'Statement for {data["customer"]}\n'
     for perf in data['performances']:
-        result += f' {perf["play"]["name"]}: {format_as_usd(calculate_amount(perf))} ({perf["audience"]} seats)\n'
+        result += f' {perf["play"]["name"]}: {format_as_usd(perf["amount"])} ({perf["audience"]} seats)\n'
     result += f'Amount owed is {format_as_usd(calculate_total_amount())}\n'
     result += f'You earned {calculate_total_volume_credits()} credits\n'
     return result
@@ -52,10 +34,29 @@ def render_plain_text(data, plays):
 def statement(invoice, plays):
     def get_play(performance):
             return plays[performance['playID']]
+
+    def calculate_amount(performance):
+            result = 0
+            if performance["play"]["type"] == "tragedy":
+                result = 40000
+                if performance['audience'] > 30:
+                    result += 1000 * (performance['audience'] - 30)
+            elif performance["play"]["type"] == "comedy":
+                result = 30000
+                if performance['audience'] > 20:
+                    result += 10000 + 500 * (performance['audience'] - 20)
+            
+                result += 300 * performance['audience']
+            
+            else:
+                raise ValueError(f'unknown type: {performance["play"]["type"]}')
+            
+            return result
     
     def enrich_performance(performance):
         result = performance.copy()
         result["play"] = get_play(result)
+        result["amount"] = calculate_amount(result)
         return result
     
     statement_data = {}
