@@ -15,44 +15,38 @@ def render_plain_text(data, plays):
 
 def statement(invoice, plays):
     def get_play(performance):
-            return plays[performance['playID']]
+        return plays[performance['playID']]
 
     def calculate_amount(performance):
-            result = 0
-            if performance["play"]["type"] == "tragedy":
-                result = 40000
-                if performance['audience'] > 30:
-                    result += 1000 * (performance['audience'] - 30)
-            elif performance["play"]["type"] == "comedy":
-                result = 30000
-                if performance['audience'] > 20:
-                    result += 10000 + 500 * (performance['audience'] - 20)
+        result = 0
+        if performance["play"]["type"] == "tragedy":
+            result = 40000
+            if performance['audience'] > 30:
+                result += 1000 * (performance['audience'] - 30)
+        elif performance["play"]["type"] == "comedy":
+            result = 30000
+            if performance['audience'] > 20:
+                result += 10000 + 500 * (performance['audience'] - 20)
             
-                result += 300 * performance['audience']
+            result += 300 * performance['audience']
             
-            else:
-                raise ValueError(f'unknown type: {performance["play"]["type"]}')
+        else:
+            raise ValueError(f'unknown type: {performance["play"]["type"]}')
             
-            return result
+        return result
 
     def calculate_volume_credits(performance):
-            result = 0
-            result += max(performance['audience'] - 30, 0)
-            if "comedy" == performance["play"]["type"]:
-                result += math.floor(performance['audience'] / 5)
-            return result
+        result = 0
+        result += max(performance['audience'] - 30, 0)
+        if "comedy" == performance["play"]["type"]:
+            result += math.floor(performance['audience'] / 5)
+        return result
 
     def calculate_total_volume_credits(data):
-            result = 0
-            for perf in data['performances']:
-                result += perf["volume_credits"]
-            return result
+        return sum(p["volume_credits"] for p in data["performances"])
 
     def calculate_total_amount(data):
-        result = 0
-        for perf in data['performances']:
-            result += perf["amount"]
-        return result
+        return sum(perf["amount"] for perf in data["performances"])
     
     def enrich_performance(performance):
         result = performance.copy()
