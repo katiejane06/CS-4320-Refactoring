@@ -23,3 +23,24 @@ def test_statement_with_new_play_types():
     with pytest.raises(ValueError) as exception_info:
         statement(invoice, plays)
     assert "unknown type" in str(exception_info.value)
+
+def test_tragedy_at_30_attendees():
+    plays = {"hamlet": {"name": "Hamlet", "type": "tragedy"}}
+    invoice = {"customer": "Test Customer","performances": [{"playID": "hamlet", "audience": 30}],}
+
+    result = statement(invoice, plays)
+
+    assert "Hamlet: $400.00 (30 seats)" in result
+    assert "Amount owed is $400.00" in result
+    assert "You earned 0 credits" in result
+
+
+def test_comedy_at_20_attendees():
+    plays = {"as-like": {"name": "As You Like It", "type": "comedy"}}
+    invoice = {"customer": "Test Customer","performances": [{"playID": "as-like", "audience": 20}],}
+
+    result = statement(invoice, plays)
+
+    assert "As You Like It: $360.00 (20 seats)" in result
+    assert "Amount owed is $360.00" in result
+    assert "You earned 4 credits" in result
