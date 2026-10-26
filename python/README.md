@@ -1,9 +1,9 @@
 Theatrical Players Refactoring Kata - Python version
 ========================================================
 
-**Author:** Katherine Lawler  
-**Date:** October 25, 2026  
-**Language:** Python
+Author: Katherine Lawler  
+Date: October 25, 2026  
+Language: Python
 
 ## Project overview and attribution
 
@@ -16,7 +16,7 @@ This project adapts the Theatrical Players example from Martin Fowler's *Refacto
 
 My modifications extract named calculation functions, introduce enriched performance records, and separate statement-data calculations from plain-text formatting. The HTML renderer uses the same prepared statement data. Performance calculator classes encapsulate the charge and credit rules, and a factory selects the appropriate calculator for each play type.
 
-[Additional modifications.]
+Added two tests for existing tragedy and comedy boundary behavior and extended the application with a HistoricalCalculator. Added three historical-play tests covering audiences of 20, 21, and 35.
 
 ## Setup and test instructions
 
@@ -43,7 +43,7 @@ python3 -m pytest
 
 No separate compilation step is required for this Python implementation.
 
-## Initial implementation review
+## Initial implementation review - Part 1
 
 The original implementation had several maintainability issues:
 
@@ -72,23 +72,7 @@ tests/test_statement.py ..                                                      
 
 The existing automated tests were run after each refactoring step, and the results matched the initial test run each time.
 
-### Final results
-
-This result is after the aditional autoamted tests were added.
-
-======================================================= test session starts ========================================================
-platform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0
-rootdir: /Users/katherinelawler/CS 4320/Refactoring/CS-4320-Refactoring/python
-configfile: pytest.ini
-testpaths: tests
-plugins: approvaltests-0.2.4, approvaltests-17.4.3
-collected 4 items                                                                                                                  
-
-tests/test_statement.py ....                                                                                                 [100%]
-
-======================================================== 4 passed in 0.01s =========================================================
-
-## Significant refactoring steps
+## Significant refactoring steps - Part 2
 
 ### 1. Extract the charge calculation
 
@@ -185,7 +169,7 @@ JavaScript getters are represented with Python's `@property`, allowing the calcu
 
 The HTML step introduces `html_statement` and `render_html`, using the same prepared data. The `format_as_usd` formatting helper moves to module scope so both renderers can use it. Adding HTML is a new output capability; the behavior-preserving refactoring is the separation that makes this addition possible.
 
-## Additional tests for existing behavior
+## Additional tests for existing behavior - Part 3
 
 ### Test 1
 
@@ -203,9 +187,20 @@ Purpose: Verifies that a comedy with exactly 20 attendees receives no audience s
 
 Verification: Ran this test against both the original implementation and the refactored implementation using python3 -m pytest. The test passed in both versions, confirming that the existing behavior was preserved.
 
-Expected output should produce the results shown in the 'Final Results' section further above.
+### Updated Test Results
+======================================================= test session starts ========================================================
+platform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/katherinelawler/CS 4320/Refactoring/CS-4320-Refactoring/python
+configfile: pytest.ini
+testpaths: tests
+plugins: approvaltests-0.2.4, approvaltests-17.4.3
+collected 4 items                                                                                                                  
 
-## Historical-play extension
+tests/test_statement.py ....                                                                                                 [100%]
+
+======================================================== 4 passed in 0.01s =========================================================
+
+## Historical-play extension - Part 4
 
 The required rules for the `historical` play type are:
 
@@ -213,33 +208,42 @@ The required rules for the `historical` play type are:
 - Add $15 per attendee beyond 20.
 - Award one volume credit for every five attendees, rounded down.
 
-Historical volume credits follow this rule alone; do not automatically add the standard credits awarded above 30 attendees.
+Implemented using `HistoricalCalculator` subclass and addition to `create_performance_calculator`.
 
-Expected boundary and example results:
+### Additional Tests
 
-| Audience | Expected charge | Expected credits | Purpose |
-| --- | --- | --- | --- |
-| 20 | $500 | 4 | No surcharge at the boundary |
-| 21 | $515 | 4 | Surcharge begins above the boundary |
-| 35 | $725 | 7 | Assignment example |
+Test 1 Name: test_historical_at_20_attendees()
 
-**Implementation:** [Description of the historical calculator and how it is selected.]
+Purpose: Confirms no surcharge at the boundary.
 
-**Tests:** [Test names, purposes, and results, including at least one boundary case.]
+Test 2 Name: test_historical_at_21_attendees()
 
-**Existing behavior:** [Verification that comedy and tragedy behavior is preserved.]
+Purpose: Confirms the $15 surcharge starts immediately above 20 and credits round down.
 
-## Reflection
+Test 3 Name: test_historical_at_35_attendees()
 
-The refactoring that has most improved the design is separating the calculations from the statement formatting. In the original implementation, the statement function had to look up plays, calculate charges and volume credits, keep track of totals, and construct the output. Following all of these responsibilities at once made the code harder to understand. Extracting named functions helped, but moving the calculation phase into create_statement_data made the overall structure much clearer.
+Purpose: Checks the provided assignment example and catches accidentally adding the parent’s extra credits.
 
-The intermediate dictionary is especially useful because it gives the renderer a consistent set of prepared values. Each enriched performance contains its play, amount, and volume credits, and the dictionary also contains the customer and statement totals. The plain-text renderer can concentrate on displaying this information. The HTML example shows how another output format can use the same calculations without copying the charging rules.
+### Final Test Results
 
-Refactoring differs from adding functionality because it changes the internal organization while preserving existing externally observable behavior. Extracting a calculation or moving it into another function should not change the charges, credits, or existing statement output. Adding support for historical plays will be a functional extension because the program will accept a new play category and apply new rules. Keeping these changes separate will make it easier to determine whether a failure comes from restructuring existing code or implementing the new requirement.
+================================================================ test session starts =================================================================
+platform darwin -- Python 3.9.6, pytest-8.4.2, pluggy-1.6.0
+rootdir: /Users/katherinelawler/CS 4320/Refactoring/CS-4320-Refactoring/python
+configfile: pytest.ini
+testpaths: tests
+plugins: approvaltests-0.2.4, approvaltests-17.4.3
+collected 7 items                                                                                                                                    
 
-[Explain how the final design helped or complicated the addition of historical plays, using the completed implementation as an example.]
+tests/test_statement.py .......                                                                                                                [100%]
 
-Replacing the calculation conditionals with polymorphism also improves the design. TragedyCalculator and ComedyCalculator each define their own charge calculation, while the parent provides the shared volume-credit rule. The comedy subclass reuses that rule and adds its bonus. The factory centralizes the remaining play-type selection, so the renderer and enrichment code do not need separate branches for each category.
+================================================================= 7 passed in 0.01s ==================================================================
 
-Several original maintainability issues have been reduced. The statement function has fewer responsibilities, descriptive names explain the calculations, and type-specific charging rules are isolated in their subclasses. The design still contains numeric constants whose meanings could be clarified further. [Describe any changes to numeric constants or the misleading comment, and any remaining limitations.]
+## Reflection - Part 5
 
+The refactoring that most improved the design was replacing the play-type calculation conditionals with polymorphism. Extracting functions and separating calculations from formatting made the code easier to follow, but the calculator subclasses made it easier to extend. TragedyCalculator and ComedyCalculator each contain their own charging rules, while PerformanceCalculator provides the shared data and standard volume-credit calculation. The comedy subclass adds its bonus by reusing the parent calculation. This organization makes the differences between play types clear without requiring one calculation function to handle every category.
+
+Refactoring changes the internal structure of software while preserving its existing externally observable behavior. Moving calculations into functions or classes should not change the charges, credits, or original statement output. Adding historical plays is different because it introduces functionality that the original implementation did not support. Keeping the structural changes separate from that extension made it easier to understand the purpose of each change. The existing automated tests provided a way to check for unintended changes, and the additional tragedy and comedy boundary tests focused on behavior at the audience surcharge thresholds.
+
+The refactored design helped me add historical plays by giving the new rules a clear location. I added HistoricalCalculator with its own amount and volume_credits properties and added historical to the factory's selection logic. The statement renderers and the code that assembles the enriched performances did not need new play-type branches. One detail I had to account for was that amounts are stored in cents, so the $500 base charge is represented as 50000 and the $15 surcharge as 1500. Historical credits also replace the standard credit rule instead of adding to it, so the subclass returns audience divided by five using floor division without calling the parent's credit property.
+
+Several original maintainability issues were resolved. The statement function no longer combines calculations and formatting, meaningful function and class names explain responsibilities, and each play type's charging rules are isolated. The credit calculations are also easier to inspect directly instead of relying on the original misleading comment. Numeric constants remain in the formulas, so named constants could make their meanings clearer. The new historical tests cover audiences of 20, 21, and 35 to check the surcharge boundary, rounded-down credits, and the assignment's example. Together, the design changes and focused tests make future modifications easier to understand and verify.
