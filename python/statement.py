@@ -4,18 +4,11 @@ def render_plain_text(data, plays):
     def format_as_usd(amount):
         amount = amount/100
         return f"${amount:0,.2f}"
-        
-    def calculate_volume_credits(performance):
-        result = 0
-        result += max(performance['audience'] - 30, 0)
-        if "comedy" == performance["play"]["type"]:
-            result += math.floor(performance['audience'] / 5)
-        return result
             
     def calculate_total_volume_credits():
         result = 0
         for perf in data['performances']:
-            result += calculate_volume_credits(perf)
+            result += perf["volume_credits"]
         return result
             
     def calculate_total_amount():
@@ -52,11 +45,19 @@ def statement(invoice, plays):
                 raise ValueError(f'unknown type: {performance["play"]["type"]}')
             
             return result
+
+    def calculate_volume_credits(performance):
+            result = 0
+            result += max(performance['audience'] - 30, 0)
+            if "comedy" == performance["play"]["type"]:
+                result += math.floor(performance['audience'] / 5)
+            return result
     
     def enrich_performance(performance):
         result = performance.copy()
         result["play"] = get_play(result)
         result["amount"] = calculate_amount(result)
+        result["volume_credits"] = calculate_volume_credits(result)
         return result
     
     statement_data = {}
