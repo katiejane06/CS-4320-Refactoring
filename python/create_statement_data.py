@@ -31,10 +31,21 @@ class PerformanceCalculator:
         return result
 
 class TragedyCalculator(PerformanceCalculator):
-    pass
+    @property
+    def amount(self):
+        result = 40000
+        if self.performance['audience'] > 30:
+            result += 1000 * (self.performance['audience'] - 30)
+        return result
 
 class ComedyCalculator(PerformanceCalculator):
-    pass
+    @property
+    def amount(self):
+        result = 30000
+        if self.performance['audience'] > 20:
+            result += 10000 + 500 * (self.performance['audience'] - 20)
+        result += 300 * self.performance['audience']
+        return result
 
 def create_performance_calculator(performance, play):
     if play["type"] == "tragedy":
@@ -56,7 +67,7 @@ def create_statement_data(invoice, plays):
         return sum(perf["amount"] for perf in data["performances"])
     
     def enrich_performance(performance):
-        calculator = PerformanceCalculator(performance, get_play(performance))
+        calculator = create_performance_calculator(performance, get_play(performance))
         result = performance.copy()
         result["play"] = calculator.play
         result["amount"] = calculator.amount
