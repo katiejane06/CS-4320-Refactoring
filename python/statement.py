@@ -7,11 +7,11 @@ def render_plain_text(data, plays):
         
     def calculate_amount(performance):
         result = 0
-        if get_play(performance)['type'] == "tragedy":
+        if performance["play"]["type"] == "tragedy":
             result = 40000
             if performance['audience'] > 30:
                 result += 1000 * (performance['audience'] - 30)
-        elif get_play(performance)['type'] == "comedy":
+        elif performance["play"]["type"] == "comedy":
             result = 30000
             if performance['audience'] > 20:
                 result += 10000 + 500 * (performance['audience'] - 20)
@@ -19,17 +19,14 @@ def render_plain_text(data, plays):
             result += 300 * performance['audience']
         
         else:
-            raise ValueError(f'unknown type: {get_play(performance)["type"]}')
+            raise ValueError(f'unknown type: {performance["play"]["type"]}')
         
         return result
-            
-    def get_play(performance):
-        return plays[performance['playID']]
         
     def calculate_volume_credits(performance):
         result = 0
         result += max(performance['audience'] - 30, 0)
-        if "comedy" == get_play(performance)["type"]:
+        if "comedy" == performance["play"]["type"]:
             result += math.floor(performance['audience'] / 5)
         return result
             
@@ -47,14 +44,20 @@ def render_plain_text(data, plays):
         
     result = f'Statement for {data["customer"]}\n'
     for perf in data['performances']:
-        result += f' {get_play(perf)["name"]}: {format_as_usd(calculate_amount(perf))} ({perf["audience"]} seats)\n'
+        result += f' {perf["play"]["name"]}: {format_as_usd(calculate_amount(perf))} ({perf["audience"]} seats)\n'
     result += f'Amount owed is {format_as_usd(calculate_total_amount())}\n'
     result += f'You earned {calculate_total_volume_credits()} credits\n'
     return result
 
 def statement(invoice, plays):
+    def get_play(performance):
+            return plays[performance['playID']]
+    
     def enrich_performance(performance):
-        return performance.copy()
+        result = performance.copy()
+        result["play"] = get_play(result)
+        return result
+    
     statement_data = {}
     statement_data['customer'] = invoice['customer']
     statement_data["performances"] = [enrich_performance(performance)for performance in invoice["performances"]]
