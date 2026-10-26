@@ -1,6 +1,10 @@
 import math
 from create_statement_data import create_statement_data
 
+def format_as_usd(amount):
+        amount = amount/100
+        return f"${amount:0,.2f}"
+
 def render_html(data):
     result = f'<h1>Statement for {data["customer"]}</h1>\n'
     result += "<table>\n"
@@ -9,11 +13,11 @@ def render_html(data):
         result += (
             f'<tr><td>{perf["play"]["name"]}</td>'
             f'<td>{perf["audience"]}</td>'
-            f'<td>{usd(perf["amount"])}</td></tr>\n'
+            f'<td>{format_as_usd(perf["amount"])}</td></tr>\n'
         )
     result += "</table>\n"
     result += (
-        f'<p>Amount owed is <em>{usd(data["total_amount"])}</em></p>\n'
+        f'<p>Amount owed is <em>{format_as_usd(data["total_amount"])}</em></p>\n'
     )
     result += (
         f'<p>You earned <em>{data["total_volume_credits"]}</em> credits</p>\n'
@@ -23,11 +27,7 @@ def render_html(data):
 def html_statement(invoice, plays):
     return render_html(create_statement_data(invoice, plays))
 
-def render_plain_text(data, plays):
-    def format_as_usd(amount):
-        amount = amount/100
-        return f"${amount:0,.2f}"
-            
+def render_plain_text(data, plays):     
     result = f'Statement for {data["customer"]}\n'
     for perf in data['performances']:
         result += f' {perf["play"]["name"]}: {format_as_usd(perf["amount"])} ({perf["audience"]} seats)\n'
