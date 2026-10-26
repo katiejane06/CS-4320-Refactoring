@@ -6,22 +6,7 @@ class PerformanceCalculator:
         self.play = play
     @property
     def amount(self):
-        result = 0
-        if self.play["type"] == "tragedy":
-            result = 40000
-            if self.performance['audience'] > 30:
-                result += 1000 * (self.performance['audience'] - 30)
-        elif self.play["type"] == "comedy":
-            result = 30000
-            if self.performance['audience'] > 20:
-                result += 10000 + 500 * (self.performance['audience'] - 20)
-            
-            result += 300 * self.performance['audience']
-            
-        else:
-            raise ValueError(f'unknown type: {self.play["type"]}')
-            
-        return result
+        raise NotImplementedError("Subclasses should calculate the amount")
     @property
     def volume_credits(self):
         result = 0
