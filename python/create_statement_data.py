@@ -30,6 +30,12 @@ class PerformanceCalculator:
             result += math.floor(self.performance['audience'] / 5)
         return result
 
+class TragedyCalculator(PerformanceCalculator):
+    pass
+
+class ComedyCalculator(PerformanceCalculator):
+    pass
+
 def create_statement_data(invoice, plays):
     def get_play(performance):
         return plays[performance['playID']]
