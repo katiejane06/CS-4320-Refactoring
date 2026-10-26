@@ -5,7 +5,6 @@ def render_plain_text(data, plays):
         amount = amount/100
         return f"${amount:0,.2f}"
             
-        
     result = f'Statement for {data["customer"]}\n'
     for perf in data['performances']:
         result += f' {perf["play"]["name"]}: {format_as_usd(perf["amount"])} ({perf["audience"]} seats)\n'
@@ -13,7 +12,7 @@ def render_plain_text(data, plays):
     result += f'You earned {data["total_volume_credits"]} credits\n'
     return result
 
-def statement(invoice, plays):
+def create_statement_data(invoice, plays):
     def get_play(performance):
         return plays[performance['playID']]
 
@@ -54,11 +53,13 @@ def statement(invoice, plays):
         result["amount"] = calculate_amount(result)
         result["volume_credits"] = calculate_volume_credits(result)
         return result
-    
+
     statement_data = {}
     statement_data['customer'] = invoice['customer']
-    statement_data["performances"] = [enrich_performance(performance)for performance in invoice["performances"]]
+    statement_data["performances"] = [enrich_performance(performance) for performance in invoice["performances"]]
     statement_data["total_amount"] = calculate_total_amount(statement_data)
     statement_data["total_volume_credits"] = calculate_total_volume_credits(statement_data)
+    return statement_data
 
-    return render_plain_text(statement_data, plays)
+def statement(invoice, plays):
+    return render_plain_text(create_statement_data(invoice, plays), plays)
