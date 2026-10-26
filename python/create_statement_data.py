@@ -36,6 +36,15 @@ class TragedyCalculator(PerformanceCalculator):
 class ComedyCalculator(PerformanceCalculator):
     pass
 
+def create_performance_calculator(performance, play):
+    if play["type"] == "tragedy":
+        return TragedyCalculator(performance, play)
+
+    if play["type"] == "comedy":
+        return ComedyCalculator(performance, play)
+
+    raise ValueError(f'unknown type: {play["type"]}')
+
 def create_statement_data(invoice, plays):
     def get_play(performance):
         return plays[performance['playID']]
