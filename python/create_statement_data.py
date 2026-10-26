@@ -4,18 +4,19 @@ class PerformanceCalculator:
     def __init__(self, performance, play):
         self.performance = performance
         self.play = play
-    def calculate_amount(self, performance):
+    @property
+    def amount(self):
         result = 0
         if self.play["type"] == "tragedy":
             result = 40000
-            if performance['audience'] > 30:
-                result += 1000 * (performance['audience'] - 30)
+            if self.performance['audience'] > 30:
+                result += 1000 * (self.performance['audience'] - 30)
         elif self.play["type"] == "comedy":
             result = 30000
-            if performance['audience'] > 20:
-                result += 10000 + 500 * (performance['audience'] - 20)
+            if self.performance['audience'] > 20:
+                result += 10000 + 500 * (self.performance['audience'] - 20)
             
-            result += 300 * performance['audience']
+            result += 300 * self.performance['audience']
             
         else:
             raise ValueError(f'unknown type: {self.play["type"]}')
@@ -47,7 +48,7 @@ def create_statement_data(invoice, plays):
         calculator = PerformanceCalculator(performance, get_play(performance))
         result = performance.copy()
         result["play"] = calculator.play
-        result["amount"] = calculate_amount(result)
+        result["amount"] = calculator.amount
         result["volume_credits"] = calculate_volume_credits(result)
         return result
 
