@@ -42,9 +42,9 @@ def create_statement_data(invoice, plays):
         result["volume_credits"] = calculate_volume_credits(result)
         return result
 
-    statement_data = {}
-    statement_data['customer'] = invoice['customer']
-    statement_data["performances"] = [enrich_performance(performance) for performance in invoice["performances"]]
-    statement_data["total_amount"] = calculate_total_amount(statement_data)
-    statement_data["total_volume_credits"] = calculate_total_volume_credits(statement_data)
-    return statement_data
+    result = {}
+    result['customer'] = invoice['customer']
+    result["performances"] = [enrich_performance(performance) for performance in invoice["performances"]]
+    result["total_amount"] = calculate_total_amount(result)
+    result["total_volume_credits"] = calculate_total_volume_credits(result)
+    return result
