@@ -1,9 +1,12 @@
-import math
 from create_statement_data import create_statement_data
 
 def format_as_usd(amount):
-        amount = amount/100
-        return f"${amount:0,.2f}"
+    # Charges are stored in cents; convert to dollars for display.
+    amount = amount/100
+    return f"${amount:0,.2f}"
+
+### STATEMENT RENDERERS
+# Both renderers use prepared statement data so charging rules stay separate from output formatting.
 
 def render_html(data):
     result = f'<h1>Statement for {data["customer"]}</h1>\n'
@@ -27,7 +30,7 @@ def render_html(data):
 def html_statement(invoice, plays):
     return render_html(create_statement_data(invoice, plays))
 
-def render_plain_text(data, plays):     
+def render_plain_text(data):     
     result = f'Statement for {data["customer"]}\n'
     for perf in data['performances']:
         result += f' {perf["play"]["name"]}: {format_as_usd(perf["amount"])} ({perf["audience"]} seats)\n'
@@ -36,4 +39,4 @@ def render_plain_text(data, plays):
     return result
 
 def statement(invoice, plays):
-    return render_plain_text(create_statement_data(invoice, plays), plays)
+    return render_plain_text(create_statement_data(invoice, plays))

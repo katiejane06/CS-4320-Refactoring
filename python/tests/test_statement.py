@@ -30,6 +30,7 @@ def test_tragedy_at_30_attendees():
 
     result = statement(invoice, plays)
 
+    # The surcharge and standard credits begin only above 30 attendees.
     assert "Hamlet: $400.00 (30 seats)" in result
     assert "Amount owed is $400.00" in result
     assert "You earned 0 credits" in result
@@ -41,6 +42,7 @@ def test_comedy_at_20_attendees():
 
     result = statement(invoice, plays)
 
+    # At the threshold, charge the base plus $3 per attendee, without a surcharge.
     assert "As You Like It: $360.00 (20 seats)" in result
     assert "Amount owed is $360.00" in result
     assert "You earned 4 credits" in result
@@ -58,6 +60,7 @@ def test_historical_at_20_attendees():
 
     result = statement(invoice, plays)
 
+    # Exactly 20 attendees should receive only the $500 base charge.
     assert "Henry V: $500.00 (20 seats)" in result
     assert "Amount owed is $500.00" in result
     assert "You earned 4 credits" in result
@@ -76,6 +79,7 @@ def test_historical_at_21_attendees():
 
     result = statement(invoice, plays)
 
+    # The first attendee above 20 adds $15, credits still round down to four.
     assert "Henry V: $515.00 (21 seats)" in result
     assert "Amount owed is $515.00" in result
     assert "You earned 4 credits" in result
@@ -94,6 +98,7 @@ def test_historical_at_35_attendees():
 
     result = statement(invoice, plays)
 
+    # Check the assignment example, historical credits exclude the standard bonus.
     assert "Henry V: $725.00 (35 seats)" in result
     assert "Amount owed is $725.00" in result
     assert "You earned 7 credits" in result

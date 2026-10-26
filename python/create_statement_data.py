@@ -1,5 +1,6 @@
-import math
 
+# All charge calculations return amounts in cents.
+## Parent calculator class
 class PerformanceCalculator:
     def __init__(self, performance, play):
         self.performance = performance
@@ -11,6 +12,7 @@ class PerformanceCalculator:
     def volume_credits(self):
         return max(self.performance["audience"] - 30, 0)
 
+## Subclasses
 class TragedyCalculator(PerformanceCalculator):
     @property
     def amount(self):
@@ -38,6 +40,7 @@ class HistoricalCalculator(PerformanceCalculator):
         if self.performance['audience'] > 20:
             result += 1500 * (self.performance['audience'] - 20)
         return result
+    # Historical credits replace the standard rule rather than adding to it.
     @property
     def volume_credits(self):
         return self.performance["audience"] // 5
@@ -55,6 +58,7 @@ def create_performance_calculator(performance, play):
 
     raise ValueError(f'unknown type: {play["type"]}')
 
+# Create the statement data by enriching each performance with calculated fields.
 def create_statement_data(invoice, plays):
     def get_play(performance):
         return plays[performance['playID']]
@@ -67,6 +71,7 @@ def create_statement_data(invoice, plays):
     
     def enrich_performance(performance):
         calculator = create_performance_calculator(performance, get_play(performance))
+        # Add calculated fields to a copy to avoid modifying the original invoice.
         result = performance.copy()
         result["play"] = calculator.play
         result["amount"] = calculator.amount
